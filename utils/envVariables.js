@@ -2,5 +2,6 @@ import 'dotenv/config'
 
 export const ENV_VARS = {
     PORT: process.env.PORT || 3000,
-    JWT_SECRET: process.env.JWT_SECRET
+    JWT_SECRET: process.env.JWT_SECRET,
+    APP_URL: process.env.APP_URL
 }

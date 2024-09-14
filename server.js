@@ -7,6 +7,7 @@ import prisma from './database/db.config.js';
 import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import { authMiddleware } from './middlewares/verifyToken.js';
+import newsRouter from './routes/newsRoutes.js';
 
 const app = express();
 
@@ -24,11 +25,17 @@ app.use(fileUpload({
     }
 }));
 
+// serve static files
+app.use(express.static("public"))
+
 // auth routes
 app.use("/api/auth", authRouter);
 
 // user routes
 app.use("/api/user", authMiddleware, userRouter);
+
+// news routes
+app.use("/api/news", authMiddleware, newsRouter);
 
 app.listen(ENV_VARS.PORT, async () => {
     console.log(`Server running on port ${ENV_VARS.PORT}`);
