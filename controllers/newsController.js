@@ -141,6 +141,12 @@ class NewsController {
                 });
             }
 
+            // delete image from server (this system)
+            const imagePath = process.cwd() + "/public/news/" + news.image.split('/').pop();
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+            }
+
             await prisma.news.delete({ where: { id: parseInt(id) } });
 
             return res.status(200).json({
