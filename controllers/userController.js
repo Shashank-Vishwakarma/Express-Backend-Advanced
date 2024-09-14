@@ -28,7 +28,7 @@ class UserController {
                 })
             }
 
-            if (!req.files || Object.keys(req.files) === 0) {
+            if (!req.files || Object.keys(req.files).length === 0) {
                 return res.status(400).json({
                     error: "No file provided"
                 })
@@ -40,12 +40,12 @@ class UserController {
             if (error) return res.status(400).json({ error });
 
             const fileName = generateUniqueFileName(profileImage.name);
-            const uploadPath = process.cwd() + "/public/images" + fileName
+            const uploadPath = process.cwd() + "/public/images" + fileName;
             profileImage.mv(uploadPath, (err) => {
                 console.log("Error uploading file: ", err);
             });
 
-            // save the uploadPath (as url) in database as needed
+            // save the uploadPath in database as needed
             await prisma.users.update({
                 where: { id: parseInt(id) },
                 data: {
@@ -58,7 +58,6 @@ class UserController {
                 message: "Profile updated successfully",
                 profileImage: uploadPath
             });
-
         } catch (error) {
             console.log("Error in updateProfile: ", error);
             return res.status(500).json({
