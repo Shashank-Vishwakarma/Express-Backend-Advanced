@@ -2,7 +2,7 @@
 
 ## Tech used:
 1. Express
-2. Kafka
-3. Prisma
-4. Redis
-5. PostgreSQL
+2. Prisma
+3. Vinejs (for schema validation like zod, yup, joi)
+4. PostgreSQL
+
