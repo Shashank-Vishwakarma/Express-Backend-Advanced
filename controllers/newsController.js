@@ -47,6 +47,9 @@ class NewsController {
                 }
             });
 
+            // invalidate redis cache
+            await redis.flushdb();
+
             return res.status(201).json({
                 success: true,
                 message: "News created successfully",
@@ -170,6 +173,9 @@ class NewsController {
 
             await prisma.news.delete({ where: { id: parseInt(id) } });
 
+            // invalidate redis cache
+            await redis.flushdb();
+
             return res.status(200).json({
                 success: true,
                 message: "News deleted successfully"
@@ -229,6 +235,9 @@ class NewsController {
                     image: image ? ENV_VARS.APP_URL + "/news/" + fileName : news.image
                 }
             })
+
+            // invalidate redis cache
+            await redis.flushdb();
 
             return res.status(200).json({
                 success: true,
