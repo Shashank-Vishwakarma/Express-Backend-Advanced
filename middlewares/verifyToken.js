@@ -1,6 +1,7 @@
-import jwt, { decode } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import { ENV_VARS } from '../utils/envVariables.js'
 import prisma from '../database/db.config.js'
+import { logger } from '../logger/logger.js';
 
 export async function authMiddleware(req, res, next) {
     try {
@@ -23,7 +24,7 @@ export async function authMiddleware(req, res, next) {
 
         next();
     } catch (error) {
-        console.log("Error in authMiddleware: ", error);
+        logger.log({ level: "error", message: `Error in authMiddleware: ${error}` });
         return res.status(500).json({
             error: "Internal server error"
         });

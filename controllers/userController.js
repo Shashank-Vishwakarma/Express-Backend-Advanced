@@ -1,4 +1,5 @@
 import prisma from "../database/db.config.js";
+import { logger } from "../logger/logger.js";
 import { generateUniqueFileName } from "../utils/generateUniqueFileName.js";
 import { validateImage } from "../utils/validateImage.js";
 
@@ -10,7 +11,7 @@ class UserController {
                 user: req.user
             });
         } catch (error) {
-            console.log("Error in getUserDetails: ", error);
+            logger.log({ level: "error", message: `Error in getUserDetails: ${error}` });
             return res.status(500).json({
                 error: "Internal server error"
             });
@@ -57,7 +58,7 @@ class UserController {
                 profileImage: ENV_VARS.APP_URL + "/images/" + fileName
             });
         } catch (error) {
-            console.log("Error in updateProfile: ", error);
+            logger.log({ level: "error", message: `Error in updateProfile: ${error}` });
             return res.status(500).json({
                 error: "Internal server error"
             });

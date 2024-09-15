@@ -1,12 +1,13 @@
 import vine, { errors } from "@vinejs/vine";
+import fs from 'fs';
+
 import prisma from "../database/db.config.js";
 import { validateImage } from "../utils/validateImage.js";
 import { newsSchemaValidation } from "../schema/newsSchemavalidation.js";
 import { generateUniqueFileName } from "../utils/generateUniqueFileName.js";
 import { ENV_VARS } from "../utils/envVariables.js";
 import { redis } from '../redis/redis.config.js'
-
-import fs from 'fs'
+import { logger } from "../logger/logger.js";
 
 class NewsController {
     static async createNews(req, res) {
@@ -64,7 +65,7 @@ class NewsController {
                 });
             }
 
-            console.log("Error in createNews Api: ", error);
+            logger.log({ level: "error", message: `Error in createNews Api: ${error}` });
             return res.status(500).json({
                 error: "Internal server error"
             });
@@ -84,7 +85,7 @@ class NewsController {
             // check redis cache
             const cachedNews = await redis.get(`news:${page}:${limit}`);
             if (cachedNews) {
-                console.log("getting from cache");
+                logger.log({ level: "info", message: "getting from cache" });
                 return res.status(200).json({
                     news: JSON.parse(cachedNews),
                     metadate: {
@@ -94,7 +95,7 @@ class NewsController {
                 });
             }
 
-            console.log("getting from database");
+            logger.log({ level: "info", message: "getting from database" });
 
             const news = await prisma.news.findMany({
                 skip: offset,
@@ -121,7 +122,7 @@ class NewsController {
                 }
             });
         } catch (error) {
-            console.log("Error in getAllNews Api: ", error);
+            logger.log({ level: "error", message: `Error in getAllNews Api: ${error}` });
             return res.status(500).json({
                 error: "Internal server error"
             });
@@ -140,7 +141,7 @@ class NewsController {
 
             return res.status(200).json(news);
         } catch (error) {
-            console.log("Error in getNewsbyId Api: ", error);
+            logger.log({ level: "error", message: `Error in getNewsbyId Api: ${error}` });
             return res.status(500).json({
                 error: "Internal server error"
             });
@@ -181,7 +182,7 @@ class NewsController {
                 message: "News deleted successfully"
             });
         } catch (error) {
-            console.log("Error in deletedNews Api: ", error);
+            logger.log({ level: "error", message: `Error in deletedNews Api: ${error}` });
             return res.status(500).json({
                 error: "Internal server error"
             });
@@ -249,7 +250,7 @@ class NewsController {
                 }
             });
         } catch (error) {
-            console.log("Error in updateNews Api: ", error);
+            logger.log({ level: "error", message: `Error in updateNews Api: ${error}` });
             return res.status(500).json({
                 error: "Internal server error"
             });

@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import { loginSchemaValidation, registerSchemaValidation } from "../schema/authSchemaValidation.js";
 import prisma from "../database/db.config.js";
 import { generateToken } from "../utils/generateToken.js";
+import { logger } from "../logger/logger.js";
 
 class AuthController {
     static async register(req, res) {
@@ -42,7 +43,7 @@ class AuthController {
                 });
             }
 
-            console.log("Error in register: ", error);
+            logger.log({ level: "error", message: `Error in register: ${error}` });
             return res.status(500).json({
                 error: "Internal server error"
             });
@@ -98,7 +99,7 @@ class AuthController {
                 });
             }
 
-            console.log("Error in login: ", error);
+            logger.log({ level: "error", message: `Error in login: ${error}` });
             return res.status(500).json({
                 error: "Internal server error"
             });

@@ -11,7 +11,7 @@ import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import { authMiddleware } from './middlewares/verifyToken.js';
 import newsRouter from './routes/newsRoutes.js';
-import { redis } from './redis/redis.config.js'
+import { logger } from './logger/logger.js';
 
 const app = express();
 
@@ -54,7 +54,7 @@ app.use("/api/user", authMiddleware, userRouter);
 app.use("/api/news", authMiddleware, newsRouter);
 
 app.listen(ENV_VARS.PORT, async () => {
-    console.log(`Server running on port ${ENV_VARS.PORT}`);
+    logger.log({ level: "info", message: `Server running on port ${ENV_VARS.PORT}` });
     await prisma.$connect();
-    console.log("Connected to the database");
+    logger.log({ level: "info", message: "Connected to the database" });
 })
