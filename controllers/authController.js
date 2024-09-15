@@ -4,6 +4,7 @@ import { loginSchemaValidation, registerSchemaValidation } from "../schema/authS
 import prisma from "../database/db.config.js";
 import { generateToken } from "../utils/generateToken.js";
 import { logger } from "../logger/logger.js";
+import { addEmailToQueue } from "../message-queue/producer.js";
 
 class AuthController {
     static async register(req, res) {
@@ -26,6 +27,8 @@ class AuthController {
             const newUser = await prisma.users.create({
                 data: { name, email, password: await bcrypt.hash(password, 10) }
             });
+
+            await addEmailToQueue({ to: email, subject: "Welcome to Express Backend Mastery", html: "<h1>Welcome</h1>" });
 
             return res.status(201).json({
                 success: true,

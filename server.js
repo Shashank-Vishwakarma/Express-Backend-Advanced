@@ -13,6 +13,9 @@ import { authMiddleware } from './middlewares/verifyToken.js';
 import newsRouter from './routes/newsRoutes.js';
 import { logger } from './logger/logger.js';
 
+// worker listens to message queue
+import './message-queue/worker.js'
+
 const app = express();
 
 // setting up rate limiter - In 1 hour, only 30 requests can be made
