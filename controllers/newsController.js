@@ -1,9 +1,11 @@
-import vine, { errors, Vine } from "@vinejs/vine";
+import vine, { errors } from "@vinejs/vine";
 import prisma from "../database/db.config.js";
 import { validateImage } from "../utils/validateImage.js";
 import { newsSchemaValidation } from "../schema/newsSchemavalidation.js";
 import { generateUniqueFileName } from "../utils/generateUniqueFileName.js";
 import { ENV_VARS } from "../utils/envVariables.js";
+import { redis } from '../redis/redis.config.js'
+
 import fs from 'fs'
 
 class NewsController {
@@ -72,9 +74,24 @@ class NewsController {
             const limit = parseInt(req.query.limit) || 5;
 
             if (page <= 0) page = 1;
-            if (limit <= 0 || limit > 100) limit = 5
+            if (limit <= 0 || limit > 100) limit = 5;
 
             const offset = (page - 1) * limit;
+
+            // check redis cache
+            const cachedNews = await redis.get(`news:${page}:${limit}`);
+            if (cachedNews) {
+                console.log("getting from cache");
+                return res.status(200).json({
+                    news: JSON.parse(cachedNews),
+                    metadate: {
+                        page,
+                        total: await redis.get('totalNews'),
+                    }
+                });
+            }
+
+            console.log("getting from database");
 
             const news = await prisma.news.findMany({
                 skip: offset,
@@ -88,6 +105,10 @@ class NewsController {
             });
 
             const totalNews = await prisma.news.count();
+
+            // save into redis as cache
+            await redis.setex(`news:${page}:${limit}`, 60, JSON.stringify(news));
+            await redis.setex(`totalNews`, 60, totalNews);
 
             return res.status(200).json({
                 news,
